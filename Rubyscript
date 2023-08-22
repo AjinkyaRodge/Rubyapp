@@ -1,47 +1,33 @@
 pipeline {
     agent any
     
-    //  NOTE: If in our projects we are running it in a docker container, then it will be like
     agent {
         label "docker-slave"
     }
-    
 
-    // Set environment variables if needed
     environment {
         RAILS_ENV = 'Ruby app production'
         branch_name = ''
         GIT_REPO_URL = ''
         your_credentials_id = ''
-        // Maven packages related things
-        // SonarQube related dependencies
-        // Any other things if needed then add here
     }
-    
 
-    // Now we will start with actual stages
     stages {
         stage('Start') {
             steps {
                 script {
                     echo 'Starting the pipeline'
-                    
-                    // Set environment variables if needed
                     env.RAILS_ENV = 'Ruby app production'
                 }
             }
         }
-        
 
         stage('Clean Workspace') {
             steps {
-                echo "Cleanup Workspace"
                 cleanWs()
             }
         }
 
-
-        
         stage('Clone') {
             steps {
                 checkout([$class: 'GitSCM',
@@ -59,11 +45,8 @@ pipeline {
             }
         }
 
-
-
         stage('Build Ruby') {
             parallel {
-
                 stage('Build Backend') {
                     steps {
                         script {
@@ -89,9 +72,6 @@ pipeline {
             }
         }
         
-        // Add more stages if needed...
-        
-
         stage('Store Artifacts') {
             steps {
                 archiveArtifacts artifacts: '**/target/*.war', allowEmptyArchive: true
